@@ -118,22 +118,30 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"main.js":[function(require,module,exports) {
-var canvas = document.querySelector('#canvas');
+var canvas = document.getElementById('canvas');
+canvas.width = document.documentElement.clientWidth;
+canvas.height = document.documentElement.clientHeight; // line
 
-canvas.onclick = function (e) {
-  console.log(e.clientX);
-  console.log(e.clientY);
-  var div = document.createElement('div');
-  div.style.position = 'absolute';
-  div.style.left = e.clientX + 'px';
-  div.style.top = e.clientY + 'px';
-  div.style.width = '6px';
-  div.style.height = '6px';
-  div.style.marginLeft = '-3px';
-  div.style.marginTop = '-3px';
-  div.style.borderRadius = '50%';
-  div.style.backgroundColor = 'black';
-  canvas.appendChild(div);
+var ctx = canvas.getContext('2d');
+var painting = false;
+ctx.fillStyle = "black";
+ctx.strockStyle = 'none';
+
+canvas.onmousedown = function () {
+  painting = true;
+};
+
+canvas.onmousemove = function (e) {
+  if (painting === true) {
+    ctx.beginPath();
+    ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+  }
+};
+
+canvas.onmouseup = function () {
+  painting = false;
 };
 },{}],"../../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

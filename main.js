@@ -1,19 +1,28 @@
-let canvas = document.querySelector('#canvas')
+let canvas = document.getElementById('canvas')
 
-canvas.onclick = (e) => {
-  console.log(e.clientX)
-  console.log(e.clientY)
+canvas.width = document.documentElement.clientWidth
+canvas.height = document.documentElement.clientHeight
 
-  let div = document.createElement('div')
-  div.style.position = 'absolute'
-  div.style.left = e.clientX + 'px'
-  div.style.top = e.clientY + 'px'
-  div.style.width = '6px'
-  div.style.height = '6px'
-  div.style.marginLeft = '-3px'
-  div.style.marginTop = '-3px'
-  div.style.borderRadius = '50%'
-  div.style.backgroundColor = 'black'
-  canvas.appendChild(div)
+// line
 
+let ctx = canvas.getContext('2d')
+let painting = false
+ctx.fillStyle = "black";
+ctx.strockStyle = 'none'
+
+canvas.onmousedown = () =>{
+  painting = true
+}
+
+canvas.onmousemove = (e) => {
+  if(painting === true){
+    ctx.beginPath()
+    ctx.arc(e.clientX, e.clientY, 10, 0 ,2* Math.PI)
+    ctx.stroke()
+    ctx.fill()
+  }
+}
+
+canvas.onmouseup = () =>{
+  painting = false
 }
