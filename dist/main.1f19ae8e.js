@@ -120,29 +120,53 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({"main.js":[function(require,module,exports) {
 var canvas = document.getElementById('canvas');
 canvas.width = document.documentElement.clientWidth;
-canvas.height = document.documentElement.clientHeight; // line
-
+canvas.height = document.documentElement.clientHeight;
 var ctx = canvas.getContext('2d');
 var painting = false;
 ctx.fillStyle = "black";
 ctx.strockStyle = 'none';
 
-canvas.onmousedown = function () {
-  painting = true;
-};
+function drawLine(x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.lineWidth = 50;
+  ctx.lineCap = 'round';
+}
 
-canvas.onmousemove = function (e) {
-  if (painting === true) {
-    ctx.beginPath();
-    ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.fill();
-  }
-};
+var isTouchDevice = 'ontouchstart' in document.documentElement;
 
-canvas.onmouseup = function () {
-  painting = false;
-};
+if (isTouchDevice) {
+  canvas.ontouchstart = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    last = [x, y];
+  };
+
+  canvas.ontouchmove = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    drawLine(last[0], last[1], x, y);
+    last = [x, y];
+  };
+} else {
+  canvas.onmousedown = function (e) {
+    painting = true;
+    last = [e.clientX, e.clientY];
+  };
+
+  canvas.onmousemove = function (e) {
+    if (painting === true) {
+      drawLine(last[0], last[1], e.clientX, e.clientY);
+      last = [e.clientX, e.clientY];
+    }
+  };
+
+  canvas.onmouseup = function () {
+    painting = false;
+  };
+}
 },{}],"../../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -171,7 +195,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49991" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51341" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
