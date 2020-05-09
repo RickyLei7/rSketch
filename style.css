@@ -3,10 +3,58 @@
   padding: 0;
   box-sizing: border-box;
 }
+ul, ol{
+  list-style: none;
+}
+body{
+  overflow: hidden;
+}
+.icon {
+  width: 1em; height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
 
 #canvas{
-  height: 100vh;
-  width: 100vw;
-  border: 1px solid red;
+  background-color: white;
   display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.actions{
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.colors{
+  position: fixed;
+  top: 60px;
+  left: 20px;
+}
+.colors > li{
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin: 10px 0;
+  transition: all 0.3s;
+}
+.colors> li.black{
+  background: black;
+}
+.colors> li.red{
+  background: red;
+}
+.colors> li.yellow{
+  background: yellow;
+}
+.colors> li.blue{
+  background: blue;
+}
+
+.colors> li.active{
+  box-shadow: 0 0 2px rgba(0,0,0,0.95);
+  transform: scale(1.5);
 }
