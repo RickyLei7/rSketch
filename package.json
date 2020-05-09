@@ -1,0 +1,8 @@
+{
+  "name": "rSketch",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:RickyLei7/rSketch.git",
+  "author": "RickyLei <rickylei7@gmail.com>",
+  "license": "MIT"
+}

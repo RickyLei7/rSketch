@@ -86,7 +86,7 @@ function color() {
   }
 
   thick.onclick = function () {
-    lineWidth = 150
+    lineWidth = 10
   }
 
 }
