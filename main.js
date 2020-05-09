@@ -1,48 +1,77 @@
 let canvas = document.getElementById('canvas')
 
 autoSetCanvasSize(canvas)
+color()
+listenToUser(canvas)
 
-
-black.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'black'
-  black.classList.add('active')
-  red.classList.remove('active')
-  yellow.classList.remove('active')
-  blue.classList.remove('active')
+pencil.onclick = function () {
+  eraserEnable = false
+  pencil.classList.add('active')
+  eraser.classList.remove('active')
 
 }
-red.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'red'
-  red.classList.add('active')
-  black.classList.remove('active')
-  yellow.classList.remove('active')
-  blue.classList.remove('active')
+eraser.onclick = function () {
+  eraserEnable = true
+  eraser.classList.add('active')
+  pencil.classList.remove('active')
 }
-yellow.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'yellow'
-  yellow.classList.add('active')
-  black.classList.remove('active')
-  red.classList.remove('active')
-  blue.classList.remove('active')
+clear.onclick = function () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
-blue.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'blue'
-  blue.classList.add('active')
-  black.classList.remove('active')
-  red.classList.remove('active')
-  yellow.classList.remove('active')
+download.onclick = function () {
+  let url = canvas.toDataURL('imag/png')
+  let a = document.createElement('a')
+  document.body.appendChild(a)
+  a.href = url
+  a.download = 'My Drawing'
+  a.target = '_blank'
+  a.click()
 }
 
 
-function autoSetCanvasSize(canvas){
+function color() {
+  black.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'black'
+    black.classList.add('active')
+    red.classList.remove('active')
+    yellow.classList.remove('active')
+    blue.classList.remove('active')
+
+  }
+  red.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'red'
+    red.classList.add('active')
+    black.classList.remove('active')
+    yellow.classList.remove('active')
+    blue.classList.remove('active')
+  }
+  yellow.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'yellow'
+    yellow.classList.add('active')
+    black.classList.remove('active')
+    red.classList.remove('active')
+    blue.classList.remove('active')
+  }
+  blue.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'blue'
+    blue.classList.add('active')
+    black.classList.remove('active')
+    red.classList.remove('active')
+    yellow.classList.remove('active')
+  }
+
+}
+
+function autoSetCanvasSize(canvas) {
   setCanvasSize()
-  window.onresize = function (){
+  window.onresize = function () {
     setCanvasSize()
   }
+
   function setCanvasSize() {
     canvas.width = document.documentElement.clientWidth
     canvas.height = document.documentElement.clientHeight
@@ -51,49 +80,87 @@ function autoSetCanvasSize(canvas){
 
 let ctx = canvas.getContext('2d')
 let painting = false
+let eraserEnable = false
 ctx.fillStyle = "black";
+
 // ctx.strockStyle = 'none'
 
-function drawLine(x1, y1, x2, y2) {
+
+function drawLine(beginX, beginY, endX, endY) {
   ctx.beginPath()
-  ctx.moveTo(x1, y1)
-  ctx.lineTo(x2, y2)
+  ctx.moveTo(beginX, beginY)
+  ctx.lineTo(endX, endY)
   ctx.stroke()
   ctx.lineWidth = 5
   ctx.lineCap = 'round'
 }
 
-let isTouchDevice = 'ontouchstart' in document.documentElement
-let last
-if (isTouchDevice) {
-  canvas.ontouchstart = (e) => {
-    let x = e.touches[0].clientX
-    let y = e.touches[0].clientY
-    last = [x, y]
-  }
-  canvas.ontouchmove = (e) => {
-    let x = e.touches[0].clientX
-    let y = e.touches[0].clientY
-    drawLine(last[0], last[1], x, y)
-    last = [x, y]
-  }
-} else {
-  canvas.onmousedown = (e) => {
-    painting = true
-    last = [e.clientX, e.clientY]
-  }
 
-  canvas.onmousemove = (e) => {
-    if (painting === true) {
-      drawLine(last[0], last[1], e.clientX, e.clientY)
-      last = [e.clientX, e.clientY]
+function listenToUser(canvas) {
+  let lastPoint = {x: undefined, y: undefined}
+  let isTouchDevice = 'ontouchstart' in document.documentElement
+  let painting = true
+  if (isTouchDevice) {
+    // Touch Device
+    canvas.ontouchstart = (e) => {
+
+      let x = e.touches[0].clientX
+      let y = e.touches[0].clientY
+
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10)
+      } else {
+        lastPoint = [x, y]
+      }
+    }
+    canvas.ontouchmove = (e) => {
+      let x = e.touches[0].clientX
+      let y = e.touches[0].clientY
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10)
+      } else {
+        let newPoint = [x, y]
+        console.log(lastPoint, newPoint)
+        drawLine(lastPoint[0], lastPoint[1], newPoint[0], newPoint[1])
+        lastPoint = newPoint
+      }
+
+    }
+  } else {
+    // Not Touch Device
+    canvas.onmousedown = (e) => {
+      let x = e.clientX
+      let y = e.clientY
+      painting = true
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10)
+      } else {
+        lastPoint = [x, y]
+      }
+    }
+    canvas.onmousemove = (e) => {
+      let x = e.clientX
+      let y = e.clientY
+      if(!painting){return}
+      if(eraserEnable){
+        ctx.clearRect(x, y, 10, 10)
+      }else{
+        let newPoint = [x, y]
+        console.log(lastPoint, newPoint)
+        drawLine(lastPoint[0], lastPoint[1], newPoint[0], newPoint[1])
+        lastPoint = newPoint
+      }
+    }
+
+    canvas.onmouseup = () => {
+      painting = false
     }
   }
 
-  canvas.onmouseup = () => {
-    painting = false
-  }
 }
+
+
+
 
 
 

@@ -120,42 +120,72 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({"main.js":[function(require,module,exports) {
 var canvas = document.getElementById('canvas');
 autoSetCanvasSize(canvas);
+color();
+listenToUser(canvas);
 
-black.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'black';
-  black.classList.add('active');
-  red.classList.remove('active');
-  yellow.classList.remove('active');
-  blue.classList.remove('active');
+pencil.onclick = function () {
+  eraserEnable = false;
+  pencil.classList.add('active');
+  eraser.classList.remove('active');
 };
 
-red.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'red';
-  red.classList.add('active');
-  black.classList.remove('active');
-  yellow.classList.remove('active');
-  blue.classList.remove('active');
+eraser.onclick = function () {
+  eraserEnable = true;
+  eraser.classList.add('active');
+  pencil.classList.remove('active');
 };
 
-yellow.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'yellow';
-  yellow.classList.add('active');
-  black.classList.remove('active');
-  red.classList.remove('active');
-  blue.classList.remove('active');
+clear.onclick = function () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-blue.onclick = function () {
-  // ctx.fillStyle = 'red'
-  ctx.strokeStyle = 'blue';
-  blue.classList.add('active');
-  black.classList.remove('active');
-  red.classList.remove('active');
-  yellow.classList.remove('active');
+download.onclick = function () {
+  var url = canvas.toDataURL('imag/png');
+  var a = document.createElement('a');
+  document.body.appendChild(a);
+  a.href = url;
+  a.download = 'My Drawing';
+  a.target = '_blank';
+  a.click();
 };
+
+function color() {
+  black.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'black';
+    black.classList.add('active');
+    red.classList.remove('active');
+    yellow.classList.remove('active');
+    blue.classList.remove('active');
+  };
+
+  red.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'red';
+    red.classList.add('active');
+    black.classList.remove('active');
+    yellow.classList.remove('active');
+    blue.classList.remove('active');
+  };
+
+  yellow.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'yellow';
+    yellow.classList.add('active');
+    black.classList.remove('active');
+    red.classList.remove('active');
+    blue.classList.remove('active');
+  };
+
+  blue.onclick = function () {
+    // ctx.fillStyle = 'red'
+    ctx.strokeStyle = 'blue';
+    blue.classList.add('active');
+    black.classList.remove('active');
+    red.classList.remove('active');
+    yellow.classList.remove('active');
+  };
+}
 
 function autoSetCanvasSize(canvas) {
   setCanvasSize();
@@ -172,49 +202,88 @@ function autoSetCanvasSize(canvas) {
 
 var ctx = canvas.getContext('2d');
 var painting = false;
+var eraserEnable = false;
 ctx.fillStyle = "black"; // ctx.strockStyle = 'none'
 
-function drawLine(x1, y1, x2, y2) {
+function drawLine(beginX, beginY, endX, endY) {
   ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
+  ctx.moveTo(beginX, beginY);
+  ctx.lineTo(endX, endY);
   ctx.stroke();
   ctx.lineWidth = 5;
   ctx.lineCap = 'round';
 }
 
-var isTouchDevice = 'ontouchstart' in document.documentElement;
-var last;
+function listenToUser(canvas) {
+  var lastPoint = {
+    x: undefined,
+    y: undefined
+  };
+  var isTouchDevice = 'ontouchstart' in document.documentElement;
+  var painting = true;
 
-if (isTouchDevice) {
-  canvas.ontouchstart = function (e) {
-    var x = e.touches[0].clientX;
-    var y = e.touches[0].clientY;
-    last = [x, y];
-  };
+  if (isTouchDevice) {
+    // Touch Device
+    canvas.ontouchstart = function (e) {
+      var x = e.touches[0].clientX;
+      var y = e.touches[0].clientY;
 
-  canvas.ontouchmove = function (e) {
-    var x = e.touches[0].clientX;
-    var y = e.touches[0].clientY;
-    drawLine(last[0], last[1], x, y);
-    last = [x, y];
-  };
-} else {
-  canvas.onmousedown = function (e) {
-    painting = true;
-    last = [e.clientX, e.clientY];
-  };
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10);
+      } else {
+        lastPoint = [x, y];
+      }
+    };
 
-  canvas.onmousemove = function (e) {
-    if (painting === true) {
-      drawLine(last[0], last[1], e.clientX, e.clientY);
-      last = [e.clientX, e.clientY];
-    }
-  };
+    canvas.ontouchmove = function (e) {
+      var x = e.touches[0].clientX;
+      var y = e.touches[0].clientY;
 
-  canvas.onmouseup = function () {
-    painting = false;
-  };
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10);
+      } else {
+        var newPoint = [x, y];
+        console.log(lastPoint, newPoint);
+        drawLine(lastPoint[0], lastPoint[1], newPoint[0], newPoint[1]);
+        lastPoint = newPoint;
+      }
+    };
+  } else {
+    // Not Touch Device
+    canvas.onmousedown = function (e) {
+      var x = e.clientX;
+      var y = e.clientY;
+      painting = true;
+
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10);
+      } else {
+        lastPoint = [x, y];
+      }
+    };
+
+    canvas.onmousemove = function (e) {
+      var x = e.clientX;
+      var y = e.clientY;
+
+      if (!painting) {
+        return;
+      }
+
+      if (eraserEnable) {
+        ctx.clearRect(x, y, 10, 10);
+      } else {
+        var newPoint = [x, y];
+        console.log(lastPoint, newPoint);
+        drawLine(lastPoint[0], lastPoint[1], newPoint[0], newPoint[1]);
+        lastPoint = newPoint;
+      }
+    };
+
+    canvas.onmouseup = function () {
+      painting = false;
+    };
+  }
 }
 },{}],"../../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];

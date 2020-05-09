@@ -27,7 +27,18 @@ body{
   position: fixed;
   top: 0;
   left: 0;
+  padding: 20px;
 }
+.actions svg{
+  width: 2em;
+  height: 2em;
+  margin: 0 5px;
+}
+.actions svg.active{
+  fill: red;
+  transform: scale(1.5);
+}
+
 .colors{
   position: fixed;
   top: 60px;
