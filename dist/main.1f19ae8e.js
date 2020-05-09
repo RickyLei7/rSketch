@@ -119,35 +119,52 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"main.js":[function(require,module,exports) {
 var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var eraserEnable = false;
+var lineWidth = 5;
 autoSetCanvasSize(canvas);
 color();
 listenToUser(canvas);
+actions();
+/*********************************************************/
 
-pencil.onclick = function () {
-  eraserEnable = false;
-  pencil.classList.add('active');
-  eraser.classList.remove('active');
-};
+function drawLine(beginX, beginY, endX, endY) {
+  ctx.beginPath();
+  ctx.moveTo(beginX, beginY);
+  ctx.lineWidth = lineWidth;
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+}
 
-eraser.onclick = function () {
-  eraserEnable = true;
-  eraser.classList.add('active');
-  pencil.classList.remove('active');
-};
+function actions() {
+  pencil.onclick = function () {
+    eraserEnable = false;
+    pencil.classList.add('active');
+    eraser.classList.remove('active');
+  };
 
-clear.onclick = function () {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-};
+  eraser.onclick = function () {
+    eraserEnable = true;
+    eraser.classList.add('active');
+    pencil.classList.remove('active');
+  };
 
-download.onclick = function () {
-  var url = canvas.toDataURL('imag/png');
-  var a = document.createElement('a');
-  document.body.appendChild(a);
-  a.href = url;
-  a.download = 'My Drawing';
-  a.target = '_blank';
-  a.click();
-};
+  clear.onclick = function () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  download.onclick = function () {
+    var url = canvas.toDataURL('imag/png');
+    var a = document.createElement('a');
+    document.body.appendChild(a);
+    a.href = url;
+    a.download = 'My Drawing';
+    a.target = '_blank';
+    a.click();
+  };
+}
 
 function color() {
   black.onclick = function () {
@@ -185,6 +202,14 @@ function color() {
     red.classList.remove('active');
     yellow.classList.remove('active');
   };
+
+  thin.onclick = function () {
+    lineWidth = 5;
+  };
+
+  thick.onclick = function () {
+    lineWidth = 150;
+  };
 }
 
 function autoSetCanvasSize(canvas) {
@@ -200,27 +225,13 @@ function autoSetCanvasSize(canvas) {
   }
 }
 
-var ctx = canvas.getContext('2d');
-var painting = false;
-var eraserEnable = false;
-ctx.fillStyle = "black"; // ctx.strockStyle = 'none'
-
-function drawLine(beginX, beginY, endX, endY) {
-  ctx.beginPath();
-  ctx.moveTo(beginX, beginY);
-  ctx.lineTo(endX, endY);
-  ctx.stroke();
-  ctx.lineWidth = 5;
-  ctx.lineCap = 'round';
-}
-
 function listenToUser(canvas) {
   var lastPoint = {
     x: undefined,
     y: undefined
   };
   var isTouchDevice = 'ontouchstart' in document.documentElement;
-  var painting = true;
+  var painting = false;
 
   if (isTouchDevice) {
     // Touch Device
@@ -274,7 +285,6 @@ function listenToUser(canvas) {
         ctx.clearRect(x, y, 10, 10);
       } else {
         var newPoint = [x, y];
-        console.log(lastPoint, newPoint);
         drawLine(lastPoint[0], lastPoint[1], newPoint[0], newPoint[1]);
         lastPoint = newPoint;
       }
