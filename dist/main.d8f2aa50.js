@@ -208,7 +208,7 @@ function color() {
   };
 
   thick.onclick = function () {
-    lineWidth = 150;
+    lineWidth = 10;
   };
 }
 
@@ -296,4 +296,4 @@ function listenToUser(canvas) {
   }
 }
 },{}]},{},["epB2"], null)
-//# sourceMappingURL=main.6a84e1ac.js.map
+//# sourceMappingURL=main.d8f2aa50.js.map
