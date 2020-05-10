@@ -1,7 +1,8 @@
 # rSketch
 Preview: https://rickylei7.github.io/rSketch/dist/index.html
 
-rSketch is a simple drawing app: HTML,CSS, Canvas, SVG and JavaScript.
+rSketch is a simple drawing app.
+HTML,CSS, Canvas, SVG and JavaScript.
 
 
 # development:
